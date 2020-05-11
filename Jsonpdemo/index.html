@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<h1>JSONP DEMO</h1>
+<div id="divCustomers"></div>
+
+</body>
+
+<script type="text/javascript"> 
+    
+    var flightHandler = function(data){
+        alert('你查询的结果是：名字' + data.name +  '年龄:' + data.age + ' 喜欢:' + data.like);
+    }; 
+
+</script>
+<script src="http://127.0.0.1/jsonpdemo/a.php?callback=flightHandler">
+
+
+// 实际情况下 会写 callback=... xxx=...& yyy=...
+
+</script>
+ 
+
+
+</html>
