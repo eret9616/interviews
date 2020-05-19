@@ -1,4 +1,4 @@
-1.js中的数据类型 null undefined string number Object symbol
+1.js中的基本数据类型 null undefined string number boolean symbol 
 共六种
 
 cookies是服务器发送给浏览器的文件，用于下次会话时保持一些特定信息。 session是保存在服务器本地的文件,用于下次会话时保持一些特定信息。
