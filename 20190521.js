@@ -1,31 +1,38 @@
-// 节流
-function throttle(fn, time, ...args) {
-    let timer = null
-    return function () {
-        if (timer) return
-        fn(...args)
-        timer = setTimeout(() => { timer = null }, time)
-    }
-}
-
-let result = throttle(Log, 2000, 55)
-
 // 防抖
-function debounce(fn, time, ...args) {
+function debounce(fn, time) {
     let timer = null
     return function () {
+        let context = this
+        let args = arguments
         if (timer) clearTimeout(timer)
-        timer = setTimeout(() => { fn(...args) }, time)
+        timer = setTimeout(() => {
+            fn.call(context, ...args)
+        }, time)
     }
 }
 
-let result2 = debounce(Log, 2000, 23)
 
+// 节流
+function throttle(fun, time) {
+    let running = false
+    return function () {
+        let context = this
+        let args = arguments
+        if (running) return
+        running = true
+        setTimeout(() => {
+            running = false
+        }, time)
+        fun.call(context, ...args)
+    }
+}
 
 
 // 二、
 // 将两个升序的有序数组合并成一个升序的有序数组
-
+// 思路：设置三个指针，值都为0，一个指向arr1的第0个元素，一个指向arr2的第0个元素，一个指向result的第0个元素
+//      当i不等于arr1的长度并且j不等于arr2的长度的时候，result[k]元素值是arr1[i]和arr2[j]中较小的，i++，k++，或者j++，k++
+//      当这个这个循环结束后，说明有一个数组已经全部循环完毕了，之后将另一个数组中的值推入到数组中
 let arr1 = [0.8, 1, 3, 5, 7]
 let arr2 = [-5, 0, 2, 5, 7, 10]
 let result = []
@@ -47,6 +54,7 @@ while (i != arr1.length && j != arr2.length) {
 }
 
 if (i == arr1.length) {
+    // 说明arr1数组中的数已经全部取完了
     for (; j != arr2.length; j++) {
         result[k] = arr2[j]
         j++; k++;
@@ -54,6 +62,7 @@ if (i == arr1.length) {
 }
 
 if (j == arr2.length) {
+    // 说明arr2数组中的数已经全部取完了
     for (; i != arr1.length; i++) {
         result[k] = arr1[i]
         i++; k++;
@@ -65,56 +74,62 @@ console.log(result)
 
 
 // 三、实现instanceof
-function myInstanceof(a, b) {
-    let right = b.prototype
-    let left = a.__proto__
-
-    while (true) {
-        if (left == null) return false
-        if (left == right) return true
-        left = left.__proto__
+Object.prototype.instanceof$$ = function (left, right) {
+    let leftProto = left.__proto__
+    while (leftProto !== null) {
+        if (left.__proto__.constructor === right) {
+            return true
+        }
+        leftProto = leftProto.__proto__
     }
+    return false
 }
 
 
+
 // 四、实现深拷贝
-function deepCopy(obj) {
-    let result
-
-    if (typeof obj == 'object') {
-        result = obj instanceof Array ? [] : {}
-        for (let i in obj) {
-            result[i] = deepCopy(obj[i])
+function deepClone(target) {
+    let obj
+    if (Object.prototype.toString.call(target) === '[object Array]') {
+        obj = []
+        target.forEach((r, i) => {
+            obj[i] = deepClone(r)
+        })
+    } else if (Object.prototype.toString.call(target) === '[object Object]') {
+        obj = {}
+        for (let i in target) {
+            obj[i] = deepClone(target[i])
         }
+    } else {
+        obj = target
     }
-    else {
-        result = obj
-    }
-
-    return result
+    return obj
 }
 
 
 // 五、Array.prototype.reduce的实现原理
 /**
+ * 分析：数组的reduce方法接收两个参数，第一个参数是cb函数，cb函数参数是(acc,curVal,index,arr)
+ *                                第二个参数是initialValue，作为初始值
  * 
- * 就是遍历 数组，对每个数组进行一次callback的计算,结果是acc,
- * 这个acc传入下一次计算中,最终返回的acc
+ * reduce方法内部原理：
+ * 就是遍历数组中每个元素，对元素调用cb方法计算得到当前值，然后累计加到acc上，最后返回acc
+ * 如果有initialValue，那么acc就是initialValue，index是从1开始的
  */
-Array.prototype.myReduce = function (cb, initialValue) {
-    const array = this
-    // acc是赋的初始值或者数组第0个元素
-    let acc = initialValue || array[0]
-    // 初始index
-    const startIndex = initialValue ? 0 : 1
+Array.prototype.__reduce = function (cb, initialValue) {
 
-    for (let i = startIndex; i < array.length; i++) {
-        const cur = array[i]
-        acc = cb(acc, cur, i, array)
+    let arr = this
+
+    let acc = initialValue ? initialValue : arr[0]
+    let startIndex = initialValue ? 1 : 0
+
+    for (let i = startIndex; i < arr.length; i++) {
+        let currentValue = arr[i]
+        acc = cb(acc, currentValue, i, arr)
     }
+
     return acc
 }
-
 
 
 // 六、为什么form表单提交没有跨域问题，但ajax提交有跨域问题？
@@ -130,21 +145,27 @@ Array.prototype.myReduce = function (cb, initialValue) {
  */
 
 
+
 // 七、求数组中最大子序列
 // O(N)复杂度
-function Fun(arr) {
+// 有一整型数组，其中元素可正、可负、也可为零。
+// 要求在该数组中找到一个子序列，其和在所有子序列中最大
+// 思路：使用动态规划，创建数组dp，dp[0]的值为arr[0],max值为arr[0],从1开始遍历arr，dp中当前元素是 当前数组元素+上一个dp元素 和 当前数组元素 对比的较大值
+function maxSubArray(arr) {
 
-    let ThisSum = 0
-    let MaxSum = 0
+    let dp = []
+    dp[0] = arr[0]
+    let max = arr[0]
 
-    for (let i = 0; i < arr.length; i++) {
-        ThisSum += arr[i] // 向右累加
-        if (ThisSum > MaxSum) {
-            MaxSum = ThisSum
+    for (let i = 1; i < arr.length; i++) {
+        dp[i] = Math.max(dp[i - 1] + arr[i], arr[i])
+        if (dp[i] > max){
+            max = dp[i]
         }
-        else if (ThisSum < 0) {
-            ThisSum = 0;
-        }
-        return MaxSum
     }
+    return max
 }
+
+let arr = [1, 2, 3, -5, 12, 2, -32, 2, 4, 8, 5, -12, 2]
+
+const r =maxSubArray(arr)
