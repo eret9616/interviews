@@ -82,12 +82,12 @@ Boolean([]) //true;
 Boolean({}) //true; 
 
 
-[] = ![] //true
+[] == ![] //true
 // 1. 在比较时 先计算右边，[]是true !true是false, 最终在比较时被转为0
 // 2. 比较string、number和引用类型时，会调用引用类型的toString 于是[].valueOf 变成了''
 // 3. 判断'' == 0， 所以返回true
 
-{} = !{} // false
+{} == !{} // false
 // 1. 在比较时 先计算右边，{}是true !true是false，最终最比较时被转为0
 // 2. 比较string、number和引用类型时，会调用引用类型的toString 于是{}.toString 变成了'[object Object]'
 // 3. 判断'[object Object]' == 0， 所以返回false
