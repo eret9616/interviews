@@ -120,15 +120,15 @@ Array.prototype.__reduce = function (cb, initialValue) {
 
     let arr = this
 
-    let acc = initialValue ? initialValue : arr[0]
-    let startIndex = initialValue ? 1 : 0
+    let accumulator = initialValue ? initialValue : arr[0]
+    let startIndex = initialValue ? 0 : 1
 
     for (let i = startIndex; i < arr.length; i++) {
         let currentValue = arr[i]
-        acc = cb(acc, currentValue, i, arr)
+        acc = cb(accumulator, currentValue, i, arr)
     }
 
-    return acc
+    return accumulator
 }
 
 
