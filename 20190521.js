@@ -125,7 +125,7 @@ Array.prototype.__reduce = function (cb, initialValue) {
 
     for (let i = startIndex; i < arr.length; i++) {
         let currentValue = arr[i]
-        acc = cb(accumulator, currentValue, i, arr)
+        accumulator = cb(accumulator, currentValue, i, arr)
     }
 
     return accumulator
