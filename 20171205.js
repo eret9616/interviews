@@ -2,7 +2,7 @@
 共六种
 
 
-2.cookies是服务器发送给浏览器的文件，用于下次会话时保持一些特定信息。 session是保存在服务器本地的文件, 用于下次会话时保持一些特定信息。
+2.cookies是服务器发送给浏览器的文件，用于下次会话时保持一些特定信息。 session是保存在服务器的数据结构,借助于客户端主机上保存的cookie，可以用于识别一些信息
 
 localStorage是保存在浏览器本地的文件，永久性的保存一些特定信息（localStorage.setItem localStorage.getItem）。
 sessionStorage是保存在浏览器的本地的文件,
