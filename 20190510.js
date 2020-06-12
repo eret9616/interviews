@@ -35,7 +35,7 @@ function sleep(ms) {
     })
 }
 
-sleep(500).then(function () {
+sleep(500).then(function () { // 还可以配合await使用
     console.log(222)
 })
 
