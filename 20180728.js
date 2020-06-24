@@ -997,34 +997,41 @@ HTTP是一个无状态协议，因此Cookie可以用来存储sessionId用来唯�
 
 
 //37
+
 说一下XSS(cross site scripting)
-XSS（跨站脚本攻击）是指攻击者在返回的HTML中嵌入javascript脚本，
-比如在评论中插入一段标签，如果模板引擎没有做转移处理，那么会生成script
+	XSS（跨站脚本攻击）是指攻击者在返回的HTML中嵌入javascript脚本，
+	比如在评论中插入一段标签，那么会生成script，进而可以获取cookie
+	
+  在HTTP头部，set - cookie：
+httponly - 禁止js访问cookie。
+secure - 仅为https的时候发送cookie。
 
-前端为了减轻这些攻击，可以阻止js读取cookie，
-在HTTP头部配上，set - cookie：
-httponly - 这个属性可以防止XSS, 它会禁止javascript脚本来访问cookie。
-secure - 这个属性告诉浏览器仅在请求为https的时候发送cookie。
-Set - Cookie: <cookie-name>=<cookie-value>; Secure    使用https的时候才能发送cookie
-Set-Cookie: <cookie-name>=<cookie-value>; HttpOnly  禁止JavaScript访问cookie
 
-{/* https://juejin.im/post/5bc009996fb9a05d0a055192#heading-20 */}
-说一下CSRF （cross site request forgery 跨站请求伪造
+CSRF （cross site request forgery 跨站请求伪造
 受害者登录网站a，保留了登录凭证(cookie)
-受害者访问了网站b，b网站向a网站发送了一个请求，浏览器默认会携带a网站的cookie（Form表单发post没有跨域问题，因为他虽然是XHR，但不是通过script创建，而且拿不到响应）
+受害者访问了网站b，b网站向a网站发送了一个请求，浏览器携带a网站的cookie
 在a网站中受害者执行了被操纵的act=xxx
 
-伪造http请求特点：
+特点：
 
 B网站向A网站请求
 带A网站Cookies，但是B拿不到cookie，也看不到cookie内容
 不访问A网站前端
-referer为B网站
+refer为B网站
 
 措施：
 1.服务端检查HTTP请求头中的refer，禁止第三方网站的请求
-2.samesite属性,strict完全禁止第三方Cookie,跨站点时任何情况都不会发送cookie,Lax:允许第三方的get(Set-Cookie: CookieName=CookieValue; SameSite=Strict;)
-3.强制验证码,于是b网站无法伪造一个完整的请求
+2.强制验证码，于是b网站无法伪造一个完整的请求
+3.samesite属性,
+strict完全禁止第三方Cookie,跨站点时任何情况都不会发送cookie,
+Lax:允许第三方站点的的get请求携带cookie
+
+(
+真实格式如下
+	Set - Cookie: <cookie-name>=<cookie-value>; Secure   
+	Set-Cookie: <cookie-name>=<cookie-value>; HttpOnly  
+  Set-Cookie: CookieName=CookieValue; SameSite=Strict;)
+
 
 
 //39
